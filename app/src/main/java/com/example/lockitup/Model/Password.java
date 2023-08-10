@@ -7,7 +7,7 @@ import io.paperdb.Paper;
 public class Password
 {
     private String PASSWORD_KEY = "PASSWORD_KEY";
-    public String STATUS_FIRST_STEP = "Draw an unlock pattern";
+    public String STATUS_FIRST_STEP = "Draw pattern to unlock";
     public String STATUS_NEXT_STEP = "Draw pattern again to confirm";
     public String STATUS_PASSWORD_CORRECT = "pattern set";
     public String STATUS_PASSWORD_INCORRECT = "Try Again";

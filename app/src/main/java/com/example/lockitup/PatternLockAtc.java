@@ -3,19 +3,26 @@ package com.example.lockitup;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
 import com.andrognito.patternlockview.PatternLockView;
 import com.andrognito.patternlockview.listener.PatternLockViewListener;
 import com.andrognito.patternlockview.utils.PatternLockUtils;
 import com.example.lockitup.Model.Password;
+import com.example.lockitup.services.BackgroundManager;
+import com.example.lockitup.utils.Utils;
 import com.shuhart.stepview.StepView;
 
 import java.util.List;
@@ -35,9 +42,32 @@ public class PatternLockAtc extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pattern_lock_atc);
 
+        BackgroundManager.getInstance().init(this).startService();
+
+        initIconeApp();
         initLayout();
 
         initPatternListener();
+    }
+
+    private void initIconeApp() {
+        if (getIntent().getStringExtra("broadcast_reciever") != null){
+
+            ImageView icone = findViewById(R.id.icone_app);
+            String current_app = new Utils(this).getLastApp();
+            ApplicationInfo applicationInfo = null;
+            try {
+                applicationInfo = getPackageManager().getApplicationInfo(current_app,0);
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            icone.setImageDrawable(applicationInfo.loadIcon(getPackageManager()));
+
+
+
+        }
+
     }
 
     private void initPatternListener()
@@ -108,7 +138,10 @@ public class PatternLockAtc extends AppCompatActivity {
     }
 
     private void startAct() {
-        startActivity(new Intent(this,MainActivity.class));
+
+        if (getIntent().getStringExtra("broadcast_reciever") ==null){
+            startActivity(new Intent(this,MainActivity.class));
+        }
         finish();
     }
 
@@ -149,10 +182,24 @@ public class PatternLockAtc extends AppCompatActivity {
             status_password.setText(utilsPassword.STATUS_FIRST_STEP);
 
         }else{
+            startCurrentHomePackage();
             finish();
             super.onBackPressed();
         }
+    }
 
+    private void startCurrentHomePackage() {
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        ResolveInfo resolveInfo = getPackageManager().resolveActivity(intent,PackageManager.MATCH_DEFAULT_ONLY);
+
+        ActivityInfo activityInfo = resolveInfo.activityInfo;
+        ComponentName componentName = new ComponentName(activityInfo.applicationInfo.packageName,activityInfo.name);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        startActivity(intent);
+
+        new Utils(this).clearLastApp();
 
     }
 }

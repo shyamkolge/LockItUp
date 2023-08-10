@@ -21,7 +21,10 @@
             app:sv_animationType="All"
             app:sv_stepPadding="12dp"
             app:sv_steps="@array/steps"
-            android:id="@+id/step_view"/>
+            android:id="@+id/step_view"
+            app:sv_textSize="5dp"
+            app:sv_selectedCircleRadius="10dp"
+            app:sv_doneCircleRadius="10dp"/>
 
 
         <LinearLayout
@@ -98,7 +101,7 @@
             app:dotNormalSize="10sp"
             app:dotSelectedSize="12sp"
             app:normalStateColor="@color/gray"
-            app:pathWidth="8dp"/>
+            app:pathWidth="2dp"/>
 
 
     </LinearLayout>
